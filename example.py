@@ -33,76 +33,9 @@ x[:, 16] = 45.4 + 7.2 * s1 - 10.5 * s2 - 2.5 * s3
 # Add noise
 x += 3.8 * np.random.normal(0, 1, np.shape(x))
 
-
-from scipy.stats import chisquare, chi2
-from math import pi
-
-# plots.plot_histograms(x)
-hist_x, bins_x = stats.histogram(x[:, 1], False)
-print("hist", hist_x, "bins", bins_x)
-
-bin_width = bins_x[1] - bins_x[0]
-print("bin width", bin_width)
-
-v = np.zeros((len(bins_x) - 1, 1))
-print("v zeros", v, "shape v zeros", v.shape)
-
-for i in range(len(hist_x)):
-    print("new v is", bin_width * 0.5 + bins_x[i])
-    v[i, 0] = bin_width * 0.5 + bins_x[i]
-print("Mean:", np.average(x[:, 1]), "STD:", np.std(x[:, 1]))
-y = (v - np.average(x[:, 1])) / np.std(x[:, 1])
-pdf_x = np.exp(-y**2/2) / np.sqrt(2 * pi)
-# norm_pdf_x = spstats.norm.pdf(v, np.average(x[:, 1]), np.std(x[:, 1]))
-# stats.multivar_pca(hist_x, norm_pdf_x)
-
-# Scale pdf to value range of observation dataset
-# Step 1: normalize
-exp_freq_dist = pdf_x / np.sum(pdf_x)
-print("Expected freq dist", exp_freq_dist)
-# Step 2: scale to sum of
-norm_pdf_x = np.sum(hist_x) * exp_freq_dist
-print("Scaled exp freq dist", norm_pdf_x)
-
-print("v", v, "norm_pdf", norm_pdf_x)
-x_plus_pdf = np.zeros((len(hist_x), 2))
-
-x_plus_pdf[:, 0] = hist_x
-x_plus_pdf[:, 1] = norm_pdf_x[:, 0]
-
-print("x + pdf", x_plus_pdf)
-
-chi2_stat, chi2_p = chisquare(hist_x, x_plus_pdf[:, 1])
-
-print("chi2 * 100", chi2_p * 100)
-chi2calc = np.sum(((x_plus_pdf[:, 0] - x_plus_pdf[:, 1]) ** 2) / x_plus_pdf[:, 1])
-
-print("Chi2calc", chi2calc)
-
-# Calculate degrees of freedom:
-# sigma = number of classes - (params for exp freq dist + number variables
-deg_freedom = len(hist_x) - (2 + 1)
-
-critical_chi2 = chi2.ppf([0.25, 0.5, 0.8, 0.95, 0.999], deg_freedom)
-print("Critical chi2", critical_chi2)
-if critical_chi2[4] < chi2calc:
-    print("Unbelievable: Chi2 is above critical value for 99.9% confidence.")
-elif critical_chi2[3] < chi2calc:
-    print("Chi2 is above critical value for 95% confidence.")
-elif critical_chi2[2] < chi2calc:
-    print("Chi2 is above critical value for 80% confidence.")
-elif critical_chi2[1] < chi2calc:
-    print("Chi2 is above critical value for 50% confidence.")
-elif critical_chi2[0] < chi2calc:
-    print("WARNING: less than 50 % confidence for Gaussian distribution.")
-else:
-    print("WARNING: Gaussian distribution not significant.")
-
-import matplotlib.pyplot as plt
-plt.bar(v[:, 0], x_plus_pdf[:, 0], width=10)
-plt.plot(v[:, 0], x_plus_pdf[:, 1])
-plt.show()
-
+#print("X shape:", x.shape[1])
+#for i in range(x.shape[1]):
+stats.multivar_pca(x, True)
 
 
 def univariate_demo():

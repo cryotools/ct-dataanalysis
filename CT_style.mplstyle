@@ -2,6 +2,8 @@
 # https://github.com/CryoTools/
 # http://matplotlib.org/api/artist_api.html
 
+#figure.dpi: 92.0
+#figure.figsize: 12.0, 9.0
 font.size: 9.0
 
 lines.linewidth : 0.7

@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats as sp_stats
+import matplotlib.pyplot as plt
 
 
 def histogram(x, allow_emptybins=False):
@@ -110,17 +111,88 @@ def summary_univar(x, create_plots=True):
 def multivar_pca(x, create_plots=True):
     """ Conduct Principal Component Analysis """
     ''' Validate Gaussian distribution of input vars using chi² tests '''
-    from scipy.stats import chisquare
-    print(x)
-    print(chisquare(x))
 
-    ''' Optional: display histograms of all input vars '''
+    from scipy.stats import chisquare, chi2
+    from sklearn.decomposition import pca
+    from math import pi
+
+    for x_line in range(x.shape[1]):
+        hist_x, bins_x = histogram(x[:, x_line], False)
+        bin_width = bins_x[1] - bins_x[0]
+
+        v = np.zeros((len(bins_x) - 1, 1))
+
+        for i in range(len(hist_x)):
+            v[i, 0] = bin_width * 0.5 + bins_x[i]
+        y = (v - np.average(x[:, x_line])) / np.std(x[:, x_line])
+        pdf_x = np.exp(-y ** 2 / 2) / np.sqrt(2 * pi)
+
+        # Scale pdf to value range of observation dataset
+        # Step 1: normalize
+        exp_freq_dist = pdf_x / np.sum(pdf_x)
+        # Step 2: scale to sum of
+        norm_pdf_x = np.sum(hist_x) * exp_freq_dist
+
+        x_plus_pdf = np.zeros((len(hist_x), 2))
+
+        x_plus_pdf[:, 0] = hist_x
+        x_plus_pdf[:, 1] = norm_pdf_x[:, 0]
+
+        # chi2_stat, chi2_p = chisquare(hist_x, x_plus_pdf[:, 1])
+
+        chi2calc = np.sum(((x_plus_pdf[:, 0] - x_plus_pdf[:, 1]) ** 2) / x_plus_pdf[:, 1])
+
+        print("Chi2calc", chi2calc)
+
+        # Calculate degrees of freedom:
+        # sigma = number of classes - (params for exp freq dist + number variables
+        deg_freedom = len(hist_x) - (2 + 1)
+
+        critical_chi2 = chi2.ppf([0.25, 0.5, 0.8, 0.95, 0.999], deg_freedom)
+        print("Critical chi2", critical_chi2)
+        if critical_chi2[4] < chi2calc:
+            print("Unbelievable: Chi2 is above critical value for 99.9% confidence.")
+        elif critical_chi2[3] < chi2calc:
+            print("Chi2 is above critical value for 95% confidence.")
+        elif critical_chi2[2] < chi2calc:
+            print("Chi2 is above critical value for 80% confidence.")
+        elif critical_chi2[1] < chi2calc:
+            print("Chi2 is above critical value for 50% confidence.")
+        elif critical_chi2[0] < chi2calc:
+            print("WARNING: less than 50 % confidence for Gaussian distribution.")
+        else:
+            print("WARNING: Gaussian distribution not significant.")
+
+        ''' Optional: display histograms of all input vars '''
+
+        if create_plots:
+            plt.bar(v[:, 0], x_plus_pdf[:, 0], width=10)
+            plt.plot(v[:, 0], x_plus_pdf[:, 1])
+            plt.show()
 
     ''' Conduct PCA '''
 
+    pca_model = pca.PCA(n_components=x.shape[1])
+    pca_model.fit(x)
+    X_r = pca_model.transform(x)
+
+    print("pca model", pca_model)
+    print("Explained variance ratio", pca_model.explained_variance_ratio_)
+
     ''' Optional: make plot(s): coefficient matrix, tree '''
 
-    pass
+    colors = ['navy', 'turquoise', 'darkorange']
+    lw = 2
+    print("shape X_r", X_r.shape[1])
+    print("X_r", X_r)
+    for color, i in zip(colors, range(X_r.shape[1] - 1)):
+        print("X_r i", X_r[i, 0])
+        print("X_r i", X_r[i, 1])
+        plt.scatter(X_r[y == i, 0], X_r[y == i, 1], color=color, alpha=.8, lw=lw)
+    plt.legend(loc='best', shadow=False, scatterpoints=1)
+    plt.title('PCA')
+
+    plt.figure()
 
 
 
