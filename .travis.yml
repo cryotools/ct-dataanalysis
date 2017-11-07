@@ -9,7 +9,7 @@ env:
     # List package dependencies for conda
     - CONDA_DEPS="pytest math numpy scipy matplotlib sklearn"
     # package name for test invocation
-    - PACKAGENAME="ct-datanalysis"
+    - PACKAGENAME="ct-dataanalysis"
 
 # command to install dependencies
 install:
