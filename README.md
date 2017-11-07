@@ -1,4 +1,5 @@
-# README #
+# CryoTools Data Analysis #
+[![Build Status](https://travis-ci.org/cryotools/ct-dataanalysis.svg?branch=master)](https://travis-ci.org/cryotools/ct-dataanalysis)
 
 Python tools to analyze data.
 
@@ -8,25 +9,3 @@ Python tools to analyze data.
 - Bivariate statistics
 - Multivariate statistics
 - Plotting
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
