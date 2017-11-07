@@ -1,8 +1,7 @@
-import CT_statistics as stats
 import CT_plots as plots
+import CT_statistics as stats
 import numpy as np
 import pandas as pd
-
 
 # Create Gaussian distributed sample sets
 s1 = np.random.random(300)   # (0, 10, 30)
